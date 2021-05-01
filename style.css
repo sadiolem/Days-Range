@@ -1,0 +1,15 @@
+.days-range {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.days-range__list {
+  margin: 0;
+  margin-bottom: 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.days-range__get-result-btn {
+  margin-bottom: 20px;
+}

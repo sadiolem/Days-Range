@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function getDaysRange(daysString, checkedDays) {
     const result = document.querySelector('.days-range__result-range');
 
+    if (!checkedDays.length) result.textContent = '';
+
     if (checkedDays.length <= 2) {
       checkedDays.forEach((day, i, arr) => {
         if (arr.indexOf(day) === 1) return;
@@ -49,8 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (i > 1 && counter >= 3) {
           if (checkedDays.length === 6 && !arr[3]) {
-            const firstRange = `${arr[0]}-${arr[2]}`;
-            const secondRange = `, ${arr[i - (counter - 1)]}-${day}`;
+            const firstRange = `${arr[0]} - ${arr[2]}`;
+            const secondRange = `, ${arr[i - (counter - 1)]} - ${day}`;
 
             result.textContent = firstRange + secondRange;
 
@@ -58,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           daysRange = arr.slice(i - (counter - 1), i + 1);
-          result.textContent = `${arr[i - (counter - 1)]}-${day}`;
+          result.textContent = `${arr[i - (counter - 1)]} - ${day}`;
         }
       } else {
         counter = 0;

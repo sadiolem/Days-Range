@@ -46,33 +46,35 @@ document.addEventListener('DOMContentLoaded', () => {
     let daysRange;
 
     daysString.forEach((day, i, arr) => {
-      if (day) {
-        counter += 1;
-
-        if (i > 1 && counter >= 3) {
-          if (checkedDays.length === 6 && !arr[3]) {
-            const firstRange = `${arr[0]} - ${arr[2]}`;
-            const secondRange = `, ${arr[i - (counter - 1)]} - ${day}`;
-
-            result.textContent = firstRange + secondRange;
-
-            return;
-          }
-
-          daysRange = arr.slice(i - (counter - 1), i + 1);
-          result.textContent = `${arr[i - (counter - 1)]} - ${day}`;
-        }
-      } else {
+      if (!day) {
         counter = 0;
+
+        return;
+      }
+
+      counter += 1;
+
+      if (i > 1 && counter >= 3) {
+        if (checkedDays.length === 6 && !arr[3]) {
+          const firstRange = `${arr[0]} - ${arr[2]}`;
+          const secondRange = `, ${arr[i - (counter - 1)]} - ${day}`;
+
+          result.textContent = firstRange + secondRange;
+
+          return;
+        }
+
+        daysRange = arr.slice(i - (counter - 1), i + 1);
+        result.textContent = `${arr[i - (counter - 1)]} - ${day}`;
       }
     });
 
-    if (daysRange) {
-      const daysNotInRange = daysString.filter((day) => !daysRange.includes(day));
+    if (!daysRange) return;
 
-      daysNotInRange.forEach((day) => {
-        if (day) result.textContent += `, ${day}`;
-      });
-    }
+    const daysNotInRange = daysString.filter((day) => !daysRange.includes(day));
+
+    daysNotInRange.forEach((day) => {
+      if (day) result.textContent += `, ${day}`;
+    });
   };
 });

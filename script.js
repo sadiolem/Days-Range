@@ -1,80 +1,56 @@
+const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+const daysCheckboxes = document.querySelectorAll('.days-range__checkbox');
+const getResultBtn = document.querySelector('.days-range__get-result-btn');
+const resultField = document.querySelector('.days-range__result-range');
+
 document.addEventListener('DOMContentLoaded', () => {
-  const getResultBtn = document.querySelector('.days-range__get-result-btn');
+  getResultBtn.addEventListener('click', getShorthandDaysOfWeek);
+});
 
-  getResultBtn.addEventListener('click', getCheckedDays);
+function getShorthandDaysOfWeek() {
+  const daysString = [...daysCheckboxes].map((day) => (day.checked ? day.nextElementSibling.textContent : ''));
+  const checkedDaysString = daysString.filter((day) => day)
 
-  function getCheckedDays() {
-    const daysCheckboxes = document.querySelectorAll('.days-range__checkbox');
-    const daysString = [...daysCheckboxes].map((day) => (day.checked ? day.nextElementSibling.textContent : ''));
-    const checkedDays = daysString.filter((day) => day);
+  let startIdx = -1;
+  let endIdx = -1;
+  const ranges = [];
 
-    getDaysRange(daysString, checkedDays);
+  checkedDaysString.forEach((day, idx) => {
+    const dayIdx = weekdays.indexOf(day);
+    if (dayIdx > -1) {
+      if (startIdx === -1) {
+        startIdx = dayIdx;
+        endIdx = dayIdx;
+      } else if (dayIdx === endIdx + 1) {
+        endIdx = dayIdx;
+      } else {
+        ranges.push({ startIdx, endIdx });
+        startIdx = dayIdx;
+        endIdx = dayIdx;
+      }
+    }
+  });
+
+  if (startIdx !== -1) {
+    ranges.push({ startIdx, endIdx });
   }
 
-  function getDaysRange(daysString, checkedDays) {
-    const result = document.querySelector('.days-range__result-range');
+  const result = [];
 
-    if (!checkedDays.length) result.textContent = '';
-
-    if (checkedDays.length <= 2) {
-      checkedDays.forEach((day, i, arr) => {
-        if (arr.indexOf(day) === 1) return;
-
-        if (arr.length === 1) {
-          result.textContent = day;
-          return;
-        }
-
-        result.textContent = `${day}, ${arr[i + 1]}`;
-      });
+  ranges.forEach(range => {
+    if (range.startIdx === range.endIdx) {
+      result.push(weekdays[range.startIdx]);
+    } else if (range.endIdx - range.startIdx === range.endIdx % 7 - range.startIdx) {
+      result.push(`${weekdays[range.startIdx]} - ${weekdays[range.endIdx]}`);
     } else {
-      if (result.textContent) result.textContent = '';
-
-      daysString.forEach((day) => {
-        if (!day) return;
-
-        if (day === checkedDays[checkedDays.length - 1]) {
-          result.textContent += day;
-          return;
-        }
-
-        result.textContent += `${day}, `;
-      });
+      const days = [];
+      for (let i = range.startIdx; i <= range.endIdx; i++) {
+        days.push(weekdays[i]);
+      }
+      result.push(days.join(', '));
     }
+  });
 
-    let counter = 0;
-    let daysRange;
-
-    daysString.forEach((day, i, arr) => {
-      if (!day) {
-        counter = 0;
-
-        return;
-      }
-
-      counter += 1;
-
-      if (i > 1 && counter >= 3) {
-        if (checkedDays.length === 6 && !arr[3]) {
-          const firstRange = `${arr[0]} - ${arr[2]}`;
-          const secondRange = `, ${arr[i - (counter - 1)]} - ${day}`;
-
-          result.textContent = firstRange + secondRange;
-
-          return;
-        }
-
-        daysRange = arr.slice(i - (counter - 1), i + 1);
-        result.textContent = `${arr[i - (counter - 1)]} - ${day}`;
-      }
-    });
-
-    if (!daysRange) return;
-
-    const daysNotInRange = daysString.filter((day) => !daysRange.includes(day));
-
-    daysNotInRange.forEach((day) => {
-      if (day) result.textContent += `, ${day}`;
-    });
-  };
-});
+  resultField.innerText = result.join(', ');
+}
